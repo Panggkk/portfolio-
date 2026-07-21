@@ -1,0 +1,343 @@
+@baseURL=http://127.0.0.1:8000
+
+
+# ==========================================
+# Test case ข้อ 1 เพิ่ม / แสดง รายชื่อพรรคการเมือง ผู้สมัคร ส.ส. เขต โดยมีรายละเอียดของเขตเลือกตั้งประกอบ(มีอย่างน้อย 2 เขตการเลือกตั้ง เขตละ 3 พรรค / ผู้สมัคร)
+# ==========================================
+
+# 1. เพิ่มภูมิภาค(ตามจังหวัด)และเขต 
+GET {{baseURL}}/regions/
+
+### [1.1] สร้างภูมิภาค: จังหวัดเชียงใหม่ กรอกซ้ำขึ้นว่า "region_id นี้มีอยู่ในระบบแล้ว"
+POST {{baseURL}}/regions/
+
+{"region_id":1,"name_th": "เชียงใหม่", "total_population": 6000000 }
+
+### [1.2] สร้างเขต 1 (อำเภอเมืองเชียงใหม่) กรอกซ้ำขึ้นว่า "const_id นี้มีอยู่ในระบบแล้ว"
+POST {{baseURL}}/constituencies/
+
+{ "region_id": 1, "const_id": 1, "const_number": 1, "total_eligible_voters": 100000 }
+
+### [1.3] สร้างเขต 8 (อำเภอหางดง-สันป่าตอง) กรอกซ้ำขึ้นว่า "const_id นี้มีอยู่ในระบบแล้ว"
+POST {{baseURL}}/constituencies/
+
+{ "region_id": 1, "const_id": 2, "const_number": 8, "total_eligible_voters": 120000 }
+
+##เช็ค มี2 เขตแล้ว
+GET {{baseURL}}/constituencies/
+
+
+
+# 2. เพิ่ม PARTIES: พรรคการเมือง 4 พรรค (แสดงรายละเอียดพรรค)
+
+
+##checkก่อน
+GET {{baseURL}}/parties/
+
+###เพิ่มพรรคเพื่อไทย (ID:9) ถ้าเพิ่มอีกรอบจะขึ้นว่ามีอยู่ในระบบแล้ว
+POST {{baseURL}}/parties/
+
+{ "party_id": 9, "party_name": "เพื่อไทย", "party_leader": "ยศชนัน วงศ์สวัสดิ์", "party_logo_url": "https://bit.ly/logo-pt" }
+
+###เพิ่มพรรคภูมิใจไทย (ID: 37) ถ้าเพิ่มอีกรอบจะขึ้นว่ามีอยู่ในระบบแล้ว
+POST {{baseURL}}/parties/
+
+{ "party_id": 37, "party_name": "ภูมิใจไทย", "party_leader": "อนุทิน ชาญวีรกูล", "party_logo_url": "https://bit.ly/logo-bjt" }
+
+###เพิ่มพรรคกล้าธรรม (ID: 42) ถ้าเพิ่มอีกรอบจะขึ้นว่ามีอยู่ในระบบแล้ว
+POST {{baseURL}}/parties/
+
+{ "party_id": 42, "party_name": "กล้าธรรม", "party_leader": "ธรรมนัส พรหมเผ่า", "party_logo_url": "https://bit.ly/logo-kt" }
+
+###เพิ่มพรรคประชาชน (ID: 46) ถ้าเพิ่มอีกรอบจะขึ้นว่ามีอยู่ในระบบแล้ว
+POST {{baseURL}}/parties/
+
+{ "party_id": 46, "party_name": "ประชาชน", "party_leader": "ณัฐพงษ์ เรืองปัญญาวุฒิ", "party_logo_url": "https://bit.ly/logo-pp" }
+
+
+# 3. เพิ่ม CANDIDATES: ผู้สมัคร สส. แบบแบ่งเขต (แสดงรายละเอียดพรรค/เขต)
+
+##check ก่อน
+GET {{baseURL}}/candidates/
+
+### [เขต 1] เพื่อไทย (เบอร์ 6) ถ้าเพิ่มอีกรอบจะขึ้นว่ามีอยู่ในระบบแล้ว
+POST {{baseURL}}/candidates/
+
+{ "const_id": 1, "const_number": 1, "party_id": 9, "candidate_number": 6, "full_name": "ธีรพัฒน์ ตันพิริยะกุล" }
+
+### [เขต 1] ประชาชน (เบอร์ 2) ถ้าเพิ่มอีกรอบจะขึ้นว่ามีอยู่ในระบบแล้ว
+POST {{baseURL}}/candidates/
+
+{ "const_id": 1,"const_number": 1, "party_id": 46, "candidate_number": 2, "full_name": "เพชรรัตน์ ใหม่ชมภู" }
+
+### เขต1 กล้าธรรม (เบอร์ 4 ) ถ้าเพิ่มอีกรอบจะขึ้นว่ามีอยู่ในระบบแล้ว
+POST {{baseURL}}/candidates/
+
+{ "const_id": 1, "const_number": 1, "party_id": 42, "candidate_number": 4, "full_name": "ภวฤทธิ์ กาญจนเกตุ" }
+
+### เขต1 ภูมิใจไทย (เบอร์ 5 ) ถ้าเพิ่มอีกรอบจะขึ้นว่ามีอยู่ในระบบแล้ว
+POST {{baseURL}}/candidates/
+
+{ "const_id": 1, "const_number": 1, "party_id": 37, "candidate_number": 5, "full_name": "ชินภัสร์ กิจเลิศสิริวัฒนา" }
+
+
+### [เขต 8] เพื่อไทย (เบอร์ 3) ถ้าเพิ่มอีกรอบจะขึ้นว่ามีอยู่ในระบบแล้ว
+POST {{baseURL}}/candidates/
+
+{ "const_id": 2,"const_number": 8, "party_id": 9, "candidate_number": 3, "full_name": "ณัฏฐ์พัฒน์ รัฐผไท" }
+
+### [เขต 8] ประชาชน (เบอร์ 4) ถ้าเพิ่มอีกรอบจะขึ้นว่ามีอยู่ในระบบแล้ว
+POST {{baseURL}}/candidates/
+
+{ "const_id": 2,"const_number": 8, "party_id": 46, "candidate_number": 4, "full_name": "ภัทรพงษ์ ลีลาภัทร์" }
+
+### เขต8 กล้าธรรม (เบอร์ 7 ) ถ้าเพิ่มอีกรอบจะขึ้นว่ามีอยู่ในระบบแล้ว
+POST {{baseURL}}/candidates/
+
+{ "const_id": 2, "const_number": 8, "party_id": 42, "candidate_number": 7, "full_name": "กุสุมา บัวพันธ์" }
+
+###เขต8 ภูมิใจไทย (เบอร์ 8 ) ถ้าเพิ่มอีกรอบจะขึ้นว่ามีอยู่ในระบบแล้ว
+POST {{baseURL}}/candidates/
+
+{ "const_id": 2, "const_number": 8, "party_id": 37, "candidate_number": 8, "full_name": "สุริยนต์ ปันทะนะ" }
+
+### GET: ตรวจสอบโจทย์ข้อ 1  ผู้สมัคร สสทั้งหมดพร้อมรายละเอียดพรรคและเขต
+GET {{baseURL}}/candidates/
+
+
+# ==========================================
+# Test case ตามข้อ 2 เพิ่ม / แสดง รายชื่อผู้มีสิทธิ์เลือกตั้ง โดยมีรายละเอียดของเขตเลือกตั้ง พร้อมทั้งสามารถ อัพเดทถานะการลงคะแนนได้
+# ==========================================
+
+
+#เพิ่มผู้มีสิทธิเลือกตั้ง 20 รายชื่อ 
+
+###เช็ค
+GET {{baseURL}}/voters/
+
+### คนที่ 1-11 อยู่เขต 1 (เชียงใหม่ เขต 1) 
+###คนที่1
+POST {{baseURL}}/voters/
+
+{ "citizen_id": "1001000000001", "full_name": "Namping", "const_id": 1 }
+
+###คนที่ 2
+POST {{baseURL}}/voters/
+
+{ "citizen_id": "2342342342343", "full_name": "NamNam", "const_id": 1 }
+
+### คนที่ 3
+POST {{baseURL}}/voters/
+
+{ "citizen_id": "4567890123456", "full_name": "Pingping", "const_id": 1 }
+
+### คนที่ 4
+POST {{baseURL}}/voters/
+
+{ "citizen_id": "1102003456789", "full_name": "Bilkin", "const_id": 1 }
+
+### คนที่ 5
+POST {{baseURL}}/voters/
+
+{ "citizen_id": "3304400556677", "full_name": "Sehun", "const_id": 1 }
+
+### คนที่ 6
+POST {{baseURL}}/voters/
+
+{ "citizen_id": "5501100223344", "full_name": "Namwan", "const_id": 1 }
+
+### คนที่ 7
+POST {{baseURL}}/voters/
+
+{ "citizen_id": "1234567890123", "full_name": "Kinkin", "const_id": 1 }
+
+### คนที่ 8
+POST {{baseURL}}/voters/
+
+{ "citizen_id": "9876543210987", "full_name": "Apo", "const_id": 1 }
+
+### คนที่ 9
+POST {{baseURL}}/voters/
+
+{ "citizen_id": "1509900887766", "full_name": "Lingaom", "const_id": 1 }
+
+### คนที่ 10
+POST {{baseURL}}/voters/
+
+{ "citizen_id": "1101500998877", "full_name": "Lingling", "const_id": 1 }
+
+### คนที่ 11
+POST {{baseURL}}/voters/
+
+{ "citizen_id": "1001000000011", "full_name": "JacksonWang", "const_id": 1 }
+
+
+## คนที่ 12-20 อยู่เขต 8 (เชียงใหม่ เขต 8)
+### คนที่ 12
+POST {{baseURL}}/voters/
+
+{ "citizen_id": "1001000000012", "full_name": "Xiaozhan", "const_id": 2 }
+
+### คนที่ 13
+POST {{baseURL}}/voters/
+
+{ "citizen_id": "1001000000013", "full_name": "Yibo", "const_id": 2 }
+
+### คนที่ 14
+POST {{baseURL}}/voters/
+
+{ "citizen_id": "2003004005006", "full_name": "Kanompang", "const_id": 2 }
+
+### คนที่ 15
+POST {{baseURL}}/voters/
+
+{ "citizen_id": "3004005006007", "full_name": "Kanomping", "const_id": 2 }
+
+### คนที่ 16
+POST {{baseURL}}/voters/
+
+{ "citizen_id": "4005006007008", "full_name": "Tonhom", "const_id": 2 }
+
+### คนที่ 17
+POST {{baseURL}}/voters/
+
+{ "citizen_id": "5506600778899", "full_name": "Tae", "const_id": 2 }
+
+### คนที่ 18
+POST {{baseURL}}/voters/
+
+{ "citizen_id": "6007008009010", "full_name": "Ton", "const_id": 2 }
+
+### คนที่ 19
+POST {{baseURL}}/voters/
+
+{ "citizen_id": "7008009010011", "full_name": "Wangchuqin", "const_id": 2 }
+
+### คนที่ 20
+POST {{baseURL}}/voters/
+
+{ "citizen_id": "8009010011012", "full_name": "Yingshasha", "const_id": 2 }
+
+### ผู้มีสิทธิเลือกตั้งทั้งหมดและข้อมูลรายละเอียด
+GET {{baseURL}}/voters/
+
+##ดูว่าถ้าใส่เลขไม่ครบ 13 หลัก จะขึ้น error ว่า "เลขบัตรประชาชนต้องมี 13 หลัก"
+POST {{baseURL}}/voters/
+
+{ "citizen_id": "123456789012", "full_name": "Test", "const_id": 1 }
+
+#ดูว่าเลขบัตรต้องเป็นตัวเลขเท่านั้น ถ้าใส่ตัวอักษรจะขึ้น error ว่า "เลขบัตรประชาชนต้องเป็นตัวเลขเท่านั้น"
+POST {{baseURL}}/voters/
+
+{ "citizen_id": "123456789012A", "full_name": "Test", "const_id": 1 }
+
+### ดูรายชื่อผู้มีสิทธิเลือกตั้งทั้งหมดพร้อมรายละเอียด
+GET {{baseURL}}/voters/
+
+### ค้นหาผู้มีสิทธิรายบุคคลด้วยเลขบัตร (เพื่อเช็คสถานะ has_voted ทั้งแบบ ส.ส.เขต และแบบบัญชีรายชื่อ เป็น False นั่นคือยังไม่ได้ใช้สิทธิเลือกตั้ง)
+GET {{baseURL}}/voters/?citizen_id=2342342342343
+
+
+
+# ==========================================
+# Test case ตามข้อ 2 อัพเดทสถานะและข้อ 3 บันทึกการลงคะแนนรายบุคคลแบบไม่ระบุตัวตน / แสดงจํานวนผู้ลงคะแนนแยกตามเขตเลือกตั้งทั้งแบบพรรค และ ส.ส.เขต ได
+# ==========================================
+
+#5. VOTING 
+### [5.1] โหวตปกติ (ใบที่ 1: ส.ส.เขต) ใน SQLite Dbeaver ตรงค่า has_voted_const ของ Namping จะเปลี่ยนจาก False(0) เป็น True(1) หลังโหวตสำเร็จ
+POST {{baseURL}}/vote/cast
+
+{ "citizen_id": "1001000000001", "vote_type": "Constituency", "candidate_id": 2 }
+
+###ดูสถานะการโหวตของ Namping ว่าได้โหวต ส.ส.เขตไปแล้วยัง จะขึ้นว่า has_voted_const: true (1) แต่ has_voted_list ยังเป็น false (0) เพราะยังไม่ได้โหวตแบบบัญชีรายชื่อ
+GET {{baseURL}}/voters/?citizen_id=1001000000001
+
+### [5.2] โหวตปกติ (ใบที่ 2: เลือกพรรค) ใน SQLite Dbeaver ตรงค่า has_voted_list ของ Namping จะเปลี่ยนจาก False(0) เป็น True(1) หลังโหวตสำเร็จ
+POST {{baseURL}}/vote/cast
+
+{ "citizen_id": "1001000000001", "vote_type": "PartyList", "party_id": 46 }
+
+###ตรงค่า has_voted_list ของ Namping จะเปลี่ยนจาก False(0) เป็น True(1) หลังโหวตสำเร็จ
+## Namping โหวตครบทั้ง ส.ส.เขต และแบบบัญชีรายชื่อแล้ว
+GET {{baseURL}}/voters/?citizen_id=1001000000001
+
+
+### [5.3] โหวตข้ามเขต (Namping อยู่เขต 1 แต่พยายามเลือกเบอร์ 4 ของเขต 8)
+# ต้อง Error: "ไม่สามารถเลือกผู้สมัครต่างเขตได้" ถ้าเลือกไปแล้ว(เลือกถูกเขตก็ขึ้น "คุณใช้สิทธิเลือก สส.เขต ไปแล้ว") เพราะโหวตซ้ำ
+POST {{baseURL}}/vote/cast
+
+{ "citizen_id": "1001000000001", "vote_type": "Constituency", "candidate_id": 4}
+
+
+### Yingshasha (ที่อยู่เขต 8) โหวต สส.เขต ของเขต1 จะขึ้น Error: "ไม่สามารถเลือกผู้สมัครต่างเขตได้"
+POST {{baseURL}}/vote/cast
+
+{ "citizen_id": "8009010011012", "vote_type": "Constituency", "candidate_id": 2 }
+
+
+### คนอยู่เขต 8 (Xiaozhan) โหวต ส.ส.เขต เขต 8 ได้ปกติ
+POST {{baseURL}}/vote/cast
+
+{ "citizen_id": "1001000000012", "vote_type": "Constituency", "candidate_id": 7 }
+
+### คนอยู่เขต 8 (Xiaozhan)พยายามโหวต "candidate_number": 2 ซึ่งเป็นเบอร์ของเขต 1 (เขต8 ไม่มีผู้สมัครคนนี้) จะขึ้น Error: "ไม่พบผู้สมัครหมายเลข 2 (ในเขต 8)"
+POST {{baseURL}}/vote/cast
+
+{ "citizen_id": "1001000000012", "vote_type": "Constituency", "candidate_number": 2 }
+
+
+# ==========================================
+# โหวตเพิ่ม
+
+
+### Lingling (เขต 1) - citizen_id: 1101500998877
+# ใบที่ 1 เขต: เลือก ส.ส. พรรคประชาชน (ID: 2)
+POST {{baseURL}}/vote/cast
+
+{ "citizen_id": "1101500998877", "vote_type": "Constituency", "candidate_id": 2 }
+
+### ใบที่ 2 บช รายชื่อ: เลือก พรรคเพื่อไทย (ID: 9) 
+POST {{baseURL}}/vote/cast
+
+{ "citizen_id": "1101500998877", "vote_type": "PartyList", "party_id": 9 }
+
+
+### JacksonWang (เขต 1) - citizen_id: 1001000000011
+# ใบที่ 1: เลือก ส.ส. เพื่อไทย (ID: 1) เลือกแล้ว has_voted_const ของ JacksonWang จะเปลี่ยนเป็น True(1) ใน SQLite Dbeaver
+POST {{baseURL}}/vote/cast
+
+{ "citizen_id": "1001000000011", "vote_type": "Constituency", "candidate_id": 1 }
+
+### ใบที่ 2: เลือก พรรคกล้าธรรม (ID: 42)  เลือกแล้ว has_voted_list ของ JacksonWang จะเปลี่ยนเป็น True(1) ใน SQLite Dbeaver
+POST {{baseURL}}/vote/cast
+
+{ "citizen_id": "1001000000011", "vote_type": "PartyList", "party_id": 42 }
+
+
+### Tae (เขต 8 / ID: 2) - citizen_id: 5506600778899
+# ใบที่ 1: เลือก ส.ส. กล้าธรรม (ID: 7) เลือกแล้ว has_voted_const ของ Tae จะเปลี่ยนเป็น True(1) ใน SQLite Dbeaver
+POST {{baseURL}}/vote/cast
+
+{ "citizen_id": "5506600778899", "vote_type": "Constituency", "candidate_id": 7 }
+
+### ใบ 2: เลือก พรรคภูมิใจไทย (ID: 37) เลือกแล้ว has_voted_list ของ Tae จะเปลี่ยนเป็น True(1) ใน SQLite Dbeaver
+POST {{baseURL}}/vote/cast
+
+{ "citizen_id": "5506600778899", "vote_type": "PartyList", "party_id": 37 }
+
+
+# ==========================================
+# Test case 4 แสดงผลคะแนนการเลือกตั้งแบบเรียลไทม์ โดยแยกตามเขตเลือกตั้ง และแยกตามพรรคการเมืองได้
+# ==========================================
+
+### แสดงจำนวนผู้มาใช้สิทธิแยกตามเขต 
+GET {{baseURL}}/results/turnout
+
+### แสดงผลคะแนนภาพรวม
+GET {{baseURL}}/results/stats
+
+### แสดงผลคะแนนแยกตามเขต 8 (อำเภอหางดง-สันป่าตอง)
+GET {{baseURL}}/results/stats?const_id=2
+
+### แสดงผลคะแนนแยกตามเขต 1 (เมืองเชียงใหม่)
+GET {{baseURL}}/results/stats?const_id=1
